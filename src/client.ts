@@ -1,19 +1,13 @@
-import { Client, LocalAuth } from 'whatsapp-web.js';
-import qrcode from 'qrcode-terminal';
-
+import { Telegraf } from 'telegraf';
 import text from './language';
-import { LANGUAGE } from './config';
+import { LANGUAGE, TELEGRAM_BOT_TOKEN } from './config';
 
-const client = new Client({
-  puppeteer: { headless: true, args: ['--no-sandbox'] },
-  authStrategy: new LocalAuth(),
-});
-client.on('qr', qr => {
-  qrcode.generate(qr, { small: true });
-});
+if (!TELEGRAM_BOT_TOKEN) {
+  console.error('TELEGRAM_BOT_TOKEN is not set in environment variables.');
+  process.exit(1);
+}
 
-client.on('ready', async () => {
-  console.log(text[LANGUAGE].CONNECTED);
-});
+const bot = new Telegraf(TELEGRAM_BOT_TOKEN);
+bot.launch().then(() => console.log(text[LANGUAGE].CONNECTED));
 
-export default client;
+export default bot;
